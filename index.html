@@ -238,17 +238,22 @@
         <button id="uno-btn" class="btn-uno text-white px-6 py-3 rounded-full font-semibold hidden transition-all">
             🔥 UNO!
         </button>
-        <button id="new-game-btn" class="btn-primary text-white px-6 py-3 rounded-full font-semibold transition-all">
-            🔄 New Game
-        </button>
     </div>
 
     <div id="message" class="message-modal fixed inset-0 flex items-center justify-center z-50 hidden">
         <div class="message-content text-white px-8 py-6 mx-4 max-w-md w-full text-center">
             <p id="message-text" class="text-xl mb-6 font-semibold"></p>
-            <button id="close-message" class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all">
-                ✅ OK
-            </button>
+            <div id="message-buttons" class="flex justify-center gap-4">
+                <button id="play-again-btn" class="btn-primary text-white px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all hidden">
+                    Main Lagi
+                </button>
+                <button id="back-btn" class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all hidden">
+                    Kembali
+                </button>
+                <button id="close-message" class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all">
+                    ✅ OK
+                </button>
+            </div>
         </div>
     </div>
 
@@ -281,9 +286,10 @@
         const discardPileEl = document.getElementById('discard-pile');
         const drawPileEl = document.getElementById('draw-pile');
         const unoBtn = document.getElementById('uno-btn');
-        const newGameBtn = document.getElementById('new-game-btn');
         const messageEl = document.getElementById('message');
         const messageTextEl = document.getElementById('message-text');
+        const playAgainBtn = document.getElementById('play-again-btn');
+        const backBtn = document.getElementById('back-btn');
         const closeMessageBtn = document.getElementById('close-message');
         const colorChooserEl = document.getElementById('color-chooser');
         const colorButtons = document.querySelectorAll('.color-btn');
@@ -324,6 +330,7 @@
 
             unoBtn.classList.add('hidden');
             colorChooserEl.classList.add('hidden');
+            messageEl.classList.add('hidden');
 
             drawPileEl.removeEventListener('click', handleDraw);
             drawPileEl.removeEventListener('touchstart', handleDraw);
@@ -518,7 +525,6 @@
                 return;
             }
 
-            // Add move animation
             const selectedCardEl = playerHandEl.children[selectedCardIndex];
             const discardRect = discardPileEl.getBoundingClientRect();
             const cardRect = selectedCardEl.getBoundingClientRect();
@@ -553,7 +559,7 @@
                         endGame();
                     }
                 }
-            }, 500); // Match animation duration
+            }, 500);
         }
 
         function showColorChooser() {
@@ -637,7 +643,6 @@
                 const card = playableCards[randomIndex];
                 const cardIndex = computerHand.findIndex(c => c === card);
 
-                // Create temporary card for animation
                 const tempCardEl = document.createElement('div');
                 tempCardEl.className = 'card';
                 if (card.color === 'wild') {
@@ -710,7 +715,7 @@
                     }
 
                     updateHands();
-                }, 500); // Match animation duration
+                }, 500);
             } else {
                 if (deck.length === 0) {
                     reshuffleDeck();
@@ -724,7 +729,6 @@
                     const cardIndex = computerHand.length - 1;
                     const playedCard = computerHand[cardIndex];
 
-                    // Create temporary card for animation
                     const tempCardEl = document.createElement('div');
                     tempCardEl.className = 'card';
                     if (playedCard.color === 'wild') {
@@ -797,7 +801,7 @@
                         }
 
                         updateHands();
-                    }, 500); // Match animation duration
+                    }, 500);
                 } else {
                     if (playerHand.length > 0 && computerHand.length > 0) {
                         currentPlayer = 'player';
@@ -916,6 +920,15 @@
         function showMessage(text) {
             messageTextEl.textContent = text;
             messageEl.classList.remove('hidden');
+            if (text.includes('won the game')) {
+                playAgainBtn.classList.remove('hidden');
+                backBtn.classList.remove('hidden');
+                closeMessageBtn.classList.add('hidden');
+            } else {
+                playAgainBtn.classList.add('hidden');
+                backBtn.classList.add('hidden');
+                closeMessageBtn.classList.remove('hidden');
+            }
         }
 
         function closeMessage() {
@@ -938,7 +951,10 @@
         });
 
         unoBtn.addEventListener('click', callUno);
-        newGameBtn.addEventListener('click', initGame);
+        playAgainBtn.addEventListener('click', initGame);
+        backBtn.addEventListener('click', () => {
+            window.location.href = '/';
+        });
         closeMessageBtn.addEventListener('click', closeMessage);
 
         window.addEventListener('load', initGame);
