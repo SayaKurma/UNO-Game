@@ -86,6 +86,10 @@
             backdrop-filter: blur(10px);
             border-radius: 20px;
             padding: 2rem;
+            display: flex;
+            flex-direction: row; /* Changed to row for horizontal layout */
+            align-items: center;
+            gap: 8rem; /* Increased gap for better spacing */
         }
         
         .draw-pile {
@@ -122,21 +126,6 @@
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
         
-        .btn-secondary {
-            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
-        }
-        
-        .btn-secondary:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(245, 87, 108, 0.6);
-        }
-        
-        .btn-success {
-            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
-        }
-        
         .btn-uno {
             background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
             animation: unoPulse 1.5s infinite;
@@ -144,17 +133,6 @@
         }
         
         @keyframes unoPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-        
-        .color-indicator {
-            border: 4px solid white;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            animation: colorPulse 2s infinite;
-        }
-        
-        @keyframes colorPulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.1); }
         }
@@ -179,6 +157,7 @@
             
             .game-center {
                 padding: 1rem;
+                gap: 4rem; /* Adjusted gap for smaller screens */
             }
         }
         
@@ -197,33 +176,9 @@
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <!-- Header -->
-    <header class="game-stats py-6 px-4 mx-4 mt-4 mb-2">
-        <div class="text-center">
-            <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 title-glow" style="font-family: 'Fredoka One', cursive;">
-                🎮 UNO GAME 🎮
-            </h1>
-            <div class="flex justify-center gap-8 md:gap-12">
-                <div class="text-center">
-                    <div class="text-yellow-300 font-semibold text-lg">🤖 Computer</div>
-                    <div class="text-white text-2xl font-bold" id="computer-count">7</div>
-                    <div class="text-yellow-200 text-sm">cards</div>
-                </div>
-                <div class="text-center">
-                    <div class="text-blue-300 font-semibold text-lg">👤 You</div>
-                    <div class="text-white text-2xl font-bold" id="player-count">7</div>
-                    <div class="text-blue-200 text-sm">cards</div>
-                </div>
-            </div>
-        </div>
-    </header>
-
     <main class="flex-grow flex flex-col game-container mx-4 mb-4 rounded-xl">
         <!-- Computer's Hand -->
         <div class="player-area m-4 p-4">
-            <div class="text-center mb-3">
-                <span class="text-white font-semibold">🤖 Computer's Hand</span>
-            </div>
             <div id="computer-hand" class="flex justify-center flex-wrap gap-2 min-h-[140px] items-center">
                 <!-- Computer's cards will be added here -->
             </div>
@@ -231,13 +186,9 @@
 
         <!-- Game Center -->
         <div class="flex-grow flex justify-center items-center p-4">
-            <div class="game-center flex flex-col md:flex-row items-center gap-8 md:gap-12 relative">
-                <!-- Current Color Indicator -->
-                <div id="current-color" class="color-indicator w-16 h-16 rounded-full absolute -top-8 left-1/2 transform -translate-x-1/2 hidden"></div>
-                
+            <div class="game-center relative">
                 <!-- Discard Pile -->
                 <div class="text-center">
-                    <div class="text-white font-semibold mb-2">🎯 Discard Pile</div>
                     <div id="discard-pile" class="card bg-white">
                         <!-- Current card will be shown here -->
                     </div>
@@ -245,7 +196,6 @@
                 
                 <!-- Draw Pile -->
                 <div class="text-center">
-                    <div class="text-white font-semibold mb-2">📚 Draw Pile</div>
                     <div id="draw-pile" class="card draw-pile cursor-pointer">
                         <div class="text-white text-4xl">?</div>
                     </div>
@@ -255,9 +205,6 @@
 
         <!-- Player's Hand -->
         <div class="player-area m-4 p-4">
-            <div class="text-center mb-3">
-                <span class="text-white font-semibold">👤 Your Hand</span>
-            </div>
             <div id="player-hand" class="flex justify-center flex-wrap gap-2 min-h-[140px] items-center">
                 <!-- Player's cards will be added here -->
             </div>
@@ -268,9 +215,6 @@
     <div class="game-stats mx-4 mb-4 py-4 px-6 flex flex-wrap justify-center gap-3">
         <button id="play-btn" class="btn-primary text-white px-6 py-3 rounded-full font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all" disabled>
             🎯 Play Card
-        </button>
-        <button id="draw-btn" class="btn-secondary text-white px-6 py-3 rounded-full font-semibold transition-all">
-            📚 Draw Card
         </button>
         <button id="uno-btn" class="btn-uno text-white px-6 py-3 rounded-full font-semibold hidden transition-all">
             🔥 UNO!
@@ -308,12 +252,8 @@
         const discardPileEl = document.getElementById('discard-pile');
         const drawPileEl = document.getElementById('draw-pile');
         const playBtn = document.getElementById('play-btn');
-        const drawBtn = document.getElementById('draw-btn');
         const unoBtn = document.getElementById('uno-btn');
         const newGameBtn = document.getElementById('new-game-btn');
-        const computerCountEl = document.getElementById('computer-count');
-        const playerCountEl = document.getElementById('player-count');
-        const currentColorEl = document.getElementById('current-color');
         const messageEl = document.getElementById('message');
         const messageTextEl = document.getElementById('message-text');
         const closeMessageBtn = document.getElementById('close-message');
@@ -340,11 +280,9 @@
             dealCards();
             startFirstTurn();
             updateHands();
-            updateCounts();
             
             playBtn.disabled = true;
             unoBtn.classList.add('hidden');
-            drawBtn.disabled = false;
         }
         
         function createDeck() {
@@ -389,7 +327,6 @@
             currentColor = card.color;
             currentValue = card.value;
             updateDiscardPile();
-            updateColorIndicator();
         }
         
         function updateHands() {
@@ -486,22 +423,12 @@
         }
         
         function updateCounts() {
-            computerCountEl.textContent = computerHand.length;
-            playerCountEl.textContent = playerHand.length;
-            
             if (playerHand.length === 2) {
                 unoBtn.classList.remove('hidden');
             } else {
                 unoBtn.classList.add('hidden');
                 unoCalled = false;
             }
-        }
-        
-        function updateColorIndicator() {
-            if (currentColor === 'wild') return;
-            
-            currentColorEl.className = `color-indicator w-16 h-16 rounded-full absolute -top-8 left-1/2 transform -translate-x-1/2 bg-${currentColor}-500`;
-            currentColorEl.classList.remove('hidden');
         }
         
         function selectCard(index) {
@@ -694,8 +621,6 @@
                     }
                     break;
             }
-            
-            updateColorIndicator();
         }
         
         function callUno() {
@@ -769,12 +694,10 @@
             }
             
             playBtn.disabled = true;
-            drawBtn.disabled = true;
         }
         
         // Event listeners
         playBtn.addEventListener('click', playCard);
-        drawBtn.addEventListener('click', drawCard);
         unoBtn.addEventListener('click', callUno);
         newGameBtn.addEventListener('click', initGame);
         closeMessageBtn.addEventListener('click', closeMessage);
