@@ -220,7 +220,7 @@
         <button id="uno-btn" class="btn-uno text-white px-6 py-3 rounded-full font-semibold hidden transition-all">
             🔥 UNO!
         </button>
-        <button id="new-game-btn" class="btn-success text-white px-6 py-3 rounded-full font-semibold transition-all">
+        <button id="new-game-btn" class="btn-primary text-white px-6 py-3 rounded-full font-semibold transition-all">
             🔄 New Game
         </button>
     </div>
@@ -432,7 +432,7 @@
         }
 
         function updateCounts() {
-            if (playerHand.length === 2) {
+            if (playerHand.length === 1) {
                 unoBtn.classList.remove('hidden');
             } else {
                 unoBtn.classList.add('hidden');
@@ -453,16 +453,14 @@
         }
 
         function canPlayCard(card) {
-            if (card.color === 'wild') return true; // Kartu Wild selalu dapat dimainkan
+            if (card.color === 'wild') return true;
 
             const topCard = discardPile[discardPile.length - 1];
 
-            // Jika kartu teratas adalah Wild, hanya cocokkan dengan currentColor
             if (topCard.color === 'wild') {
                 return card.color === currentColor;
             }
 
-            // Cocokkan warna, nilai, atau jenis kartu aksi
             return card.color === topCard.color || 
                    card.value === topCard.value || 
                    (['Skip', 'Reverse', 'Draw2'].includes(card.value) && card.value === topCard.value);
@@ -472,6 +470,12 @@
             if (selectedCardIndex === -1 || currentPlayer !== 'player') return;
 
             const card = playerHand[selectedCardIndex];
+            // Check if this is the last card and UNO has not been called
+            if (playerHand.length === 1 && !unoCalled) {
+                playerMustDraw();
+                return;
+            }
+
             playerHand.splice(selectedCardIndex, 1);
             discardPile.push(card);
 
@@ -484,8 +488,8 @@
                 updateHands();
                 updateCounts();
 
-                if (playerHand.length === 1 && !unoCalled) {
-                    playerMustDraw();
+                if (playerHand.length === 0) {
+                    endGame();
                     return;
                 }
 
@@ -512,8 +516,8 @@
             updateHands();
             updateCounts();
 
-            if (playerHand.length === 1 && !unoCalled) {
-                playerMustDraw();
+            if (playerHand.length === 0) {
+                endGame();
                 return;
             }
 
@@ -582,12 +586,13 @@
                 updateCounts();
 
                 if (computerHand.length === 1) {
-                    const random = Math.random();
-                    if (random < 0.5) {
+                    const shouldCallUno = !computerHand.some(card => 
+                        card.color === 'wild' || card.value === 'Draw2');
+                    if (shouldCallUno) {
+                        showMessage('🤖 Computer called UNO!');
+                    } else {
                         computerMustDraw();
                         return;
-                    } else {
-                        showMessage('🤖 Computer called UNO!');
                     }
                 }
 
@@ -624,12 +629,13 @@
                     updateCounts();
 
                     if (computerHand.length === 1) {
-                        const random = Math.random();
-                        if (random < 0.5) {
+                        const shouldCallUno = !computerHand.some(card => 
+                            card.color === 'wild' || card.value === 'Draw2');
+                        if (shouldCallUno) {
+                            showMessage('🤖 Computer called UNO!');
+                        } else {
                             computerMustDraw();
                             return;
-                        } else {
-                            showMessage('🤖 Computer called UNO!');
                         }
                     }
                 }
@@ -647,9 +653,9 @@
 
         function updateGameStateAfterPlay(card) {
             if (card.color === 'wild') {
-                currentValue = ''; // Reset currentValue untuk kartu Wild
+                currentValue = '';
             } else {
-                currentValue = card.value; // Atur currentValue untuk kartu biasa
+                currentValue = card.value;
             }
 
             switch (card.value) {
@@ -692,7 +698,7 @@
         }
 
         function callUno() {
-            if (playerHand.length === 2) {
+            if (playerHand.length === 1) {
                 unoCalled = true;
                 unoBtn.classList.add('hidden');
                 showMessage('🔥 UNO! You have 1 card left!');
@@ -702,6 +708,9 @@
         function playerMustDraw() {
             playerDrawCards(2);
             showMessage('😬 You forgot to call UNO! Draw 2 cards.');
+            selectedCardIndex = -1;
+            updateHands();
+            updateCounts();
             setTimeout(computerTurn, 2000);
         }
 
