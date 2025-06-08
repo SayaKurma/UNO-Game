@@ -170,8 +170,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .card-move {
+            animation: moveToDiscard 0.5s ease-out forwards;
+        }
+
+        @keyframes moveToDiscard {
+            0% { transform: translateY(0) scale(1); }
+            100% { transform: translateY(-200px) scale(0.8); opacity: 0; }
+        }
+
         .title-glow {
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            text-shadow: 0 0 20px rgba(255,255,255,0. DCC0.5);
         }
 
         .color-btn {
@@ -214,9 +223,6 @@
     </main>
 
     <div class="game-stats mx-4 mb-4 py-4 px-6 flex flex-wrap justify-center gap-3">
-        <button id="play-btn" class="btn-primary text-white px-6 py-3 rounded-full font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-all" disabled>
-            🎯 Play Card
-        </button>
         <button id="uno-btn" class="btn-uno text-white px-6 py-3 rounded-full font-semibold hidden transition-all">
             🔥 UNO!
         </button>
@@ -225,7 +231,7 @@
         </button>
     </div>
 
-    <div id="message" class="message-modal fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div id="message" class="message-modal fixed inset-0 flex거이flex items-center justify-center z-50 hidden">
         <div class="message-content text-white px-8 py-6 mx-4 max-w-md w-full text-center">
             <p id="message-text" class="text-xl mb-6 font-semibold"></p>
             <button id="close-message" class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all">
@@ -262,7 +268,6 @@
         const playerHandEl = document.getElementById('player-hand');
         const discardPileEl = document.getElementById('discard-pile');
         const drawPileEl = document.getElementById('draw-pile');
-        const playBtn = document.getElementById('play-btn');
         const unoBtn = document.getElementById('uno-btn');
         const newGameBtn = document.getElementById('new-game-btn');
         const messageEl = document.getElementById('message');
@@ -305,7 +310,6 @@
             startFirstTurn();
             updateHands();
 
-            playBtn.disabled = true;
             unoBtn.classList.add('hidden');
             colorChooserEl.classList.add('hidden');
 
@@ -313,6 +317,11 @@
             drawPileEl.removeEventListener('touchstart', handleDraw);
             drawPileEl.addEventListener('click', handleDraw);
             drawPileEl.addEventListener('touchstart', handleDraw);
+
+            discardPileEl.removeEventListener('click', handleDiscardClick);
+            discardPileEl.removeEventListener('touchstart', handleDiscardClick);
+            discardPileEl.addEventListener('click', handleDiscardClick);
+            discardPileEl.addEventListener('touchstart', handleDiscardClick);
         }
 
         function createDeck() {
@@ -460,15 +469,14 @@
         }
 
         function selectCard(index) {
+            if (currentPlayer !== 'player') return;
+
             if (selectedCardIndex >= 0 && selectedCardIndex < playerHand.length) {
                 playerHandEl.children[selectedCardIndex].classList.remove('selected');
             }
 
-            if (currentPlayer === 'player') {
-                selectedCardIndex = index;
-                playerHandEl.children[selectedCardIndex].classList.add('selected');
-                playBtn.disabled = !canPlayCard(playerHand[index]);
-            }
+            selectedCardIndex = index;
+            playerHandEl.children[selectedCardIndex].classList.add('selected');
         }
 
         function canPlayCard(card) {
@@ -485,43 +493,53 @@
                    (['Skip', 'Reverse', 'Draw2'].includes(card.value) && card.value === topCard.value);
         }
 
-        function playCard() {
+        function handleDiscardClick(e) {
+            e.preventDefault();
             if (selectedCardIndex === -1 || currentPlayer !== 'player') return;
 
             const card = playerHand[selectedCardIndex];
+            if (!canPlayCard(card)) {
+                showMessage('❌ Invalid card! Choose a matching color or value.');
+                return;
+            }
+
             if (playerHand.length === 1 && !unoCalled) {
                 playerMustDraw();
                 return;
             }
 
-            playerHand.splice(selectedCardIndex, 1);
-            discardPile.push(card);
+            // Add move animation
+            const selectedCardEl = playerHandEl.children[selectedCardIndex];
+            selectedCardEl.classList.add('card-move');
+            setTimeout(() => {
+                playerHand.splice(selectedCardIndex, 1);
+                discardPile.push(card);
 
-            if (card.color === 'wild') {
-                showColorChooser();
-            } else {
-                updateGameStateAfterPlay(card);
-                selectedCardIndex = -1;
-                updateDiscardPile();
-                updateHands();
-                updateCounts();
-
-                if (playerHand.length === 0) {
-                    endGame();
-                    return;
-                }
-
-                if (playerHand.length > 0 && computerHand.length > 0) {
-                    setTimeout(computerTurn, 1000);
+                if (card.color === 'wild') {
+                    showColorChooser();
                 } else {
-                    endGame();
+                    updateGameStateAfterPlay(card);
+                    selectedCardIndex = -1;
+                    updateDiscardPile();
+                    updateHands();
+                    updateCounts();
+
+                    if (playerHand.length === 0) {
+                        endGame();
+                        return;
+                    }
+
+                    if (playerHand.length > 0 && computerHand.length > 0) {
+                        setTimeout(computerTurn, 1000);
+                    } else {
+                        endGame();
+                    }
                 }
-            }
+            }, 500); // Match animation duration
         }
 
         function showColorChooser() {
             colorChooserEl.classList.remove('hidden');
-            playBtn.disabled = true;
         }
 
         function chooseColor(color) {
@@ -564,7 +582,7 @@
 
             const card = deck.pop();
             playerHand.push(card);
-            updateHands(); // Segera perbarui UI untuk menampilkan kartu baru
+            updateHands();
 
             if (canPlayCard(card)) {
                 const cardIndex = playerHand.length - 1;
@@ -799,8 +817,6 @@
             } else if (computerHand.length === 0) {
                 showMessage('🤖 Computer won the game! Try again! 💪');
             }
-
-            playBtn.disabled = true;
         }
 
         colorButtons.forEach(button => {
@@ -810,7 +826,6 @@
             });
         });
 
-        playBtn.addEventListener('click', playCard);
         unoBtn.addEventListener('click', callUno);
         newGameBtn.addEventListener('click', initGame);
         closeMessageBtn.addEventListener('click', closeMessage);
