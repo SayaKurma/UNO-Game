@@ -256,6 +256,7 @@
         let currentValue = '';
         let selectedCardIndex = -1;
         let unoCalled = false;
+        let isDrawing = false;
 
         const computerHandEl = document.getElementById('computer-hand');
         const playerHandEl = document.getElementById('player-hand');
@@ -274,6 +275,18 @@
         const values = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'Skip', 'Reverse', 'Draw2'];
         const wildCards = ['Wild', 'Wild_Draw4'];
 
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
         function initGame() {
             deck = [];
             discardPile = [];
@@ -284,6 +297,7 @@
             currentValue = '';
             selectedCardIndex = -1;
             unoCalled = false;
+            isDrawing = false;
 
             createDeck();
             shuffleDeck();
@@ -294,6 +308,11 @@
             playBtn.disabled = true;
             unoBtn.classList.add('hidden');
             colorChooserEl.classList.add('hidden');
+
+            drawPileEl.removeEventListener('click', handleDraw);
+            drawPileEl.removeEventListener('touchstart', handleDraw);
+            drawPileEl.addEventListener('click', handleDraw);
+            drawPileEl.addEventListener('touchstart', handleDraw);
         }
 
         function createDeck() {
@@ -470,7 +489,6 @@
             if (selectedCardIndex === -1 || currentPlayer !== 'player') return;
 
             const card = playerHand[selectedCardIndex];
-            // Check if this is the last card and UNO has not been called
             if (playerHand.length === 1 && !unoCalled) {
                 playerMustDraw();
                 return;
@@ -528,13 +546,25 @@
             }
         }
 
+        const handleDraw = debounce((e) => {
+            e.preventDefault();
+            drawCard();
+        }, 500);
+
         function drawCard() {
+            if (isDrawing || currentPlayer !== 'player') {
+                showMessage('⏳ Not your turn or drawing in progress!');
+                return;
+            }
+            isDrawing = true;
+
             if (deck.length === 0) {
                 reshuffleDeck();
             }
 
             const card = deck.pop();
             playerHand.push(card);
+            updateHands(); // Segera perbarui UI untuk menampilkan kartu baru
 
             if (canPlayCard(card)) {
                 const cardIndex = playerHand.length - 1;
@@ -546,8 +576,8 @@
                 setTimeout(computerTurn, 1000);
             }
 
-            updateHands();
             updateCounts();
+            isDrawing = false;
         }
 
         function computerChooseColor() {
@@ -784,7 +814,6 @@
         unoBtn.addEventListener('click', callUno);
         newGameBtn.addEventListener('click', initGame);
         closeMessageBtn.addEventListener('click', closeMessage);
-        drawPileEl.addEventListener('click', drawCard);
 
         window.addEventListener('load', initGame);
     </script>
