@@ -175,12 +175,33 @@
         }
 
         @keyframes moveToDiscard {
-            0% { transform: translateY(0) scale(1); }
-            100% { transform: translateY(-200px) scale(0.8); opacity: 0; }
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(100vw / 2 - 45px), -300px) scale(1);
+                opacity: 0;
+            }
+        }
+
+        .card-move-computer {
+            animation: moveToDiscardComputer 0.5s ease-out forwards;
+        }
+
+        @keyframes moveToDiscardComputer {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(calc(100vw / 2 - 45px), 300px) scale(1);
+                opacity: 0;
+            }
         }
 
         .title-glow {
-            text-shadow: 0 0 20px rgba(255,255,255,0. DCC0.5);
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
         }
 
         .color-btn {
@@ -231,7 +252,7 @@
         </button>
     </div>
 
-    <div id="message" class="message-modal fixed inset-0 flex거이flex items-center justify-center z-50 hidden">
+    <div id="message" class="message-modal fixed inset-0 flex items-center justify-center z-50 hidden">
         <div class="message-content text-white px-8 py-6 mx-4 max-w-md w-full text-center">
             <p id="message-text" class="text-xl mb-6 font-semibold"></p>
             <button id="close-message" class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all">
@@ -510,7 +531,15 @@
 
             // Add move animation
             const selectedCardEl = playerHandEl.children[selectedCardIndex];
-            selectedCardEl.classList.add('card-move');
+            const discardRect = discardPileEl.getBoundingClientRect();
+            const cardRect = selectedCardEl.getBoundingClientRect();
+            const deltaX = discardRect.left - cardRect.left;
+            const deltaY = discardRect.top - cardRect.top;
+
+            selectedCardEl.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+            selectedCardEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1)`;
+            selectedCardEl.style.opacity = '0';
+
             setTimeout(() => {
                 playerHand.splice(selectedCardIndex, 1);
                 discardPile.push(card);
@@ -619,60 +648,57 @@
                 const card = playableCards[randomIndex];
                 const cardIndex = computerHand.findIndex(c => c === card);
 
-                computerHand.splice(cardIndex, 1);
-                discardPile.push(card);
-
+                // Create temporary card for animation
+                const tempCardEl = document.createElement('div');
+                tempCardEl.className = 'card';
                 if (card.color === 'wild') {
-                    currentColor = computerChooseColor();
-                    showMessage(`🤖 Computer chose ${currentColor}!`);
-                }
-
-                updateGameStateAfterPlay(card);
-                showMessage('🤖 Computer played a card!');
-
-                updateDiscardPile();
-                updateCounts();
-
-                if (computerHand.length === 1) {
-                    const shouldCallUno = !computerHand.some(card => 
-                        card.color === 'wild' || card.value === 'Draw2');
-                    if (shouldCallUno) {
-                        showMessage('🤖 Computer called UNO!');
+                    tempCardEl.classList.add('bg-black', 'text-white', 'flex-col');
+                    tempCardEl.innerHTML = `
+                        <div class="text-xs mb-1">${card.value.replace('_', ' ')}</div>
+                        <div class="flex w-full h-4 rounded">
+                            <div class="w-1/4 bg-red-500 rounded-l"></div>
+                            <div class="w-1/4 bg-blue-500"></div>
+                            <div class="w-1/4 bg-green-500"></div>
+                            <div class="w-1/4 bg-yellow-500 rounded-r"></div>
+                        </div>
+                    `;
+                } else {
+                    const bgColor = `bg-${card.color}-500`;
+                    const textColor = ['blue', 'green'].includes(card.color) ? 'text-white' : 'text-black';
+                    tempCardEl.className += ` ${bgColor} ${textColor}`;
+                    if (['Skip', 'Reverse', 'Draw2'].includes(card.value)) {
+                        let symbol = '';
+                        switch (card.value) {
+                            case 'Skip': symbol = '⊘'; break;
+                            case 'Reverse': symbol = '↻'; break;
+                            case 'Draw2': symbol = '+2'; break;
+                        }
+                        tempCardEl.innerHTML = `<div class="text-3xl">${symbol}</div>`;
                     } else {
-                        computerMustDraw();
-                        return;
+                        tempCardEl.textContent = card.value;
                     }
                 }
+                computerHandEl.children[cardIndex].replaceWith(tempCardEl);
 
-                if (playerHand.length > 0 && computerHand.length > 0) {
-                    currentPlayer = 'player';
-                    updateCounts();
-                } else {
-                    endGame();
-                }
-            } else {
-                if (deck.length === 0) {
-                    reshuffleDeck();
-                }
+                const discardRect = discardPileEl.getBoundingClientRect();
+                const cardRect = tempCardEl.getBoundingClientRect();
+                const deltaX = discardRect.left - cardRect.left;
+                const deltaY = discardRect.top - cardRect.top;
 
-                const card = deck.pop();
-                computerHand.push(card);
-                showMessage('🤖 Computer drew a card');
+                tempCardEl.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+                tempCardEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1)`;
+                tempCardEl.style.opacity = '0';
 
-                if (canPlayCard(card)) {
-                    const cardIndex = computerHand.length - 1;
-                    const playedCard = computerHand[cardIndex];
+                setTimeout(() => {
                     computerHand.splice(cardIndex, 1);
-                    discardPile.push(playedCard);
+                    discardPile.push(card);
 
-                    if (playedCard.color === 'wild') {
+                    if (card.color === 'wild') {
                         currentColor = computerChooseColor();
                         showMessage(`🤖 Computer chose ${currentColor}!`);
                     }
 
-                    updateGameStateAfterPlay(playedCard);
-                    showMessage('🤖 Computer played the drawn card!');
-
+                    updateGameStateAfterPlay(card);
                     updateDiscardPile();
                     updateCounts();
 
@@ -686,17 +712,113 @@
                             return;
                         }
                     }
+
+                    if (playerHand.length > 0 && computerHand.length > 0) {
+                        currentPlayer = 'player';
+                        updateCounts();
+                    } else {
+                        endGame();
+                    }
+
+                    updateHands();
+                }, 500); // Match animation duration
+            } else {
+                if (deck.length === 0) {
+                    reshuffleDeck();
                 }
 
-                if (playerHand.length > 0 && computerHand.length > 0) {
-                    currentPlayer = 'player';
-                    updateCounts();
+                const card = deck.pop();
+                computerHand.push(card);
+                showMessage('🤖 Computer drew a card');
+
+                if (canPlayCard(card)) {
+                    const cardIndex = computerHand.length - 1;
+                    const playedCard = computerHand[cardIndex];
+
+                    // Create temporary card for animation
+                    const tempCardEl = document.createElement('div');
+                    tempCardEl.className = 'card';
+                    if (playedCard.color === 'wild') {
+                        tempCardEl.classList.add('bg-black', 'text-white', 'flex-col');
+                        tempCardEl.innerHTML = `
+                            <div class="text-xs mb-1">${playedCard.value.replace('_', ' ')}</div>
+                            <div class="flex w-full h-4 rounded">
+                                <div class="w-1/4 bg-red-500 rounded-l"></div>
+                                <div class="w-1/4 bg-blue-500"></div>
+                                <div class="w-1/4 bg-green-500"></div>
+                                <div class="w-1/4 bg-yellow-500 rounded-r"></div>
+                            </div>
+                        `;
+                    } else {
+                        const bgColor = `bg-${playedCard.color}-500`;
+                        const textColor = ['blue', 'green'].includes(playedCard.color) ? 'text-white' : 'text-black';
+                        tempCardEl.className += ` ${bgColor} ${textColor}`;
+                        if (['Skip', 'Reverse', 'Draw2'].includes(playedCard.value)) {
+                            let symbol = '';
+                            switch (playedCard.value) {
+                                case 'Skip': symbol = '⊘'; break;
+                                case 'Reverse': symbol = '↻'; break;
+                                case 'Draw2': symbol = '+2'; break;
+                            }
+                            tempCardEl.innerHTML = `<div class="text-3xl">${symbol}</div>`;
+                        } else {
+                            tempCardEl.textContent = playedCard.value;
+                        }
+                    }
+                    computerHandEl.appendChild(tempCardEl);
+
+                    const discardRect = discardPileEl.getBoundingClientRect();
+                    const cardRect = tempCardEl.getBoundingClientRect();
+                    const deltaX = discardRect.left - cardRect.left;
+                    const deltaY = discardRect.top - cardRect.top;
+
+                    tempCardEl.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
+                    tempCardEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1)`;
+                    tempCardEl.style.opacity = '0';
+
+                    setTimeout(() => {
+                        computerHand.splice(cardIndex, 1);
+                        discardPile.push(playedCard);
+
+                        if (playedCard.color === 'wild') {
+                            currentColor = computerChooseColor();
+                            showMessage(`🤖 Computer chose ${currentColor}!`);
+                        }
+
+                        updateGameStateAfterPlay(playedCard);
+                        updateDiscardPile();
+                        updateCounts();
+
+                        if (computerHand.length === 1) {
+                            const shouldCallUno = !computerHand.some(card => 
+                                card.color === 'wild' || card.value === 'Draw2');
+                            if (shouldCallUno) {
+                                showMessage('🤖 Computer called UNO!');
+                            } else {
+                                computerMustDraw();
+                                return;
+                            }
+                        }
+
+                        if (playerHand.length > 0 && computerHand.length > 0) {
+                            currentPlayer = 'player';
+                            updateCounts();
+                        } else {
+                            endGame();
+                        }
+
+                        updateHands();
+                    }, 500); // Match animation duration
                 } else {
-                    endGame();
+                    if (playerHand.length > 0 && computerHand.length > 0) {
+                        currentPlayer = 'player';
+                        updateCounts();
+                    } else {
+                        endGame();
+                    }
+                    updateHands();
                 }
             }
-
-            updateHands();
         }
 
         function updateGameStateAfterPlay(card) {
