@@ -161,15 +161,6 @@
             }
         }
 
-        .fade-in {
-            animation: fadeIn 0.3s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
         .card-move {
             animation: moveToDiscard 0.5s ease-out forwards;
         }
@@ -393,8 +384,7 @@
             computerHandEl.innerHTML = '';
             for (let i = 0; i < computerHand.length; i++) {
                 const cardEl = document.createElement('div');
-                cardEl.className = 'card card-back fade-in';
-                cardEl.style.animationDelay = `${i * 0.1}s`;
+                cardEl.className = 'card card-back';
                 computerHandEl.appendChild(cardEl);
             }
 
@@ -402,8 +392,7 @@
             for (let i = 0; i < playerHand.length; i++) {
                 const card = playerHand[i];
                 const cardEl = document.createElement('div');
-                cardEl.className = 'card fade-in';
-                cardEl.style.animationDelay = `${i * 0.1}s`;
+                cardEl.className = 'card';
 
                 if (card.color === 'wild') {
                     cardEl.classList.add('bg-black', 'text-white', 'flex-col');
@@ -448,7 +437,7 @@
 
             const card = discardPile[discardPile.length - 1];
             discardPileEl.innerHTML = '';
-            discardPileEl.className = 'card fade-in';
+            discardPileEl.className = 'card';
 
             if (card.color === 'wild') {
                 discardPileEl.classList.add('bg-black', 'text-white', 'flex-col');
