@@ -869,14 +869,14 @@
                 case 'Draw2':
                     if (currentPlayer === 'player') {
                         computerDrawCards(2);
-                        showMessage('🤖 Komputer mengambil 2 kartu!');
-                        // Switch to computer after Draw2 effect
-                        currentPlayer = 'computer';
+                        showMessage('🤖 Komputer mengambil 2 kartu dan melewatkan gilirannya!');
+                        // Retain player's turn
+                        currentPlayer = 'player';
                     } else {
                         playerDrawCards(2);
-                        showMessage('😅 Anda mengambil 2 kartu!');
-                        // Switch to player after Draw2 effect
-                        currentPlayer = 'player';
+                        showMessage('😅 Anda mengambil 2 kartu dan melewatkan giliran!');
+                        // Retain computer's turn
+                        currentPlayer = 'computer';
                     }
                     break;
 
