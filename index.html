@@ -254,6 +254,9 @@
                 <button id="close-message" class="bg-white text-purple-600 px-6 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all">
                     ✅ OK
                 </button>
+                <button id="bluff-btn" class="bg-yellow-500 text-black px-6 py-2 rounded-full font-semibold hover:bg-yellow-400 transition-all hidden">
+                    🕵️ Tuduh Bluff!
+                </button>
             </div>
         </div>
     </div>
@@ -281,6 +284,7 @@
         let selectedCardIndex = -1;
         let unoCalled = false;
         let isDrawing = false;
+        let isBluffing = false;
 
         const computerHandEl = document.getElementById('computer-hand');
         const playerHandEl = document.getElementById('player-hand');
@@ -292,6 +296,7 @@
         const playAgainBtn = document.getElementById('play-again-btn');
         const backBtn = document.getElementById('back-btn');
         const closeMessageBtn = document.getElementById('close-message');
+        const bluffBtn = document.getElementById('bluff-btn');
         const colorChooserEl = document.getElementById('color-chooser');
         const colorButtons = document.querySelectorAll('.color-btn');
 
@@ -322,6 +327,7 @@
             selectedCardIndex = -1;
             unoCalled = false;
             isDrawing = false;
+            isBluffing = false;
 
             createDeck();
             shuffleDeck();
@@ -332,6 +338,7 @@
             unoBtn.classList.add('hidden');
             colorChooserEl.classList.add('hidden');
             messageEl.classList.add('hidden');
+            bluffBtn.classList.add('hidden');
 
             drawPileEl.removeEventListener('click', handleDraw);
             drawPileEl.removeEventListener('touchstart', handleDraw);
@@ -346,25 +353,19 @@
 
         function createDeck() {
             deck = [];
-
-            // Tambah kartu angka
             for (const color of colors) {
-                deck.push({ color, value: '0' }); // 1 kartu 0 per warna
-                for (const value of values.slice(1)) { // 1-9 dan kartu aksi
+                deck.push({ color, value: '0' });
+                for (const value of values.slice(1)) {
                     deck.push({ color, value });
-                    deck.push({ color, value }); // 2 kartu per nilai
+                    deck.push({ color, value });
                 }
             }
-
-            // Tambah kartu Wild
             for (const value of wildCards) {
                 for (let i = 0; i < 4; i++) {
                     deck.push({ color: 'wild', value });
                 }
             }
-
-            // Verifikasi jumlah total kartu
-            const expectedCardCount = 108; // 4 warna * (1 kartu 0 + 2 * (9 angka + 3 aksi)) + 4 Wild + 4 Wild_Draw4
+            const expectedCardCount = 108;
             if (deck.length !== expectedCardCount) {
                 console.error(`Kesalahan: Jumlah kartu ${deck.length}, seharusnya ${expectedCardCount}`);
                 throw new Error(`Jumlah kartu tidak sesuai: ${deck.length} kartu`);
@@ -390,7 +391,6 @@
             do {
                 card = deck.pop();
             } while (card.color === 'wild');
-
             discardPile.push(card);
             currentColor = card.color;
             currentValue = card.value;
@@ -410,7 +410,6 @@
                 const card = playerHand[i];
                 const cardEl = document.createElement('div');
                 cardEl.className = 'card';
-
                 if (card.color === 'wild') {
                     cardEl.classList.add('bg-black', 'text-white', 'flex-col');
                     cardEl.innerHTML = `
@@ -426,7 +425,6 @@
                     const bgColor = `bg-${card.color}-500`;
                     const textColor = ['blue', 'green'].includes(card.color) ? 'text-white' : 'text-black';
                     cardEl.className += ` ${bgColor} ${textColor}`;
-
                     if (['Skip', 'Reverse', 'Draw2'].includes(card.value)) {
                         let symbol = '';
                         switch (card.value) {
@@ -439,7 +437,6 @@
                         cardEl.textContent = card.value;
                     }
                 }
-
                 cardEl.addEventListener('click', () => selectCard(i));
                 playerHandEl.appendChild(cardEl);
             }
@@ -451,11 +448,9 @@
 
         function updateDiscardPile() {
             if (discardPile.length === 0) return;
-
             const card = discardPile[discardPile.length - 1];
             discardPileEl.innerHTML = '';
             discardPileEl.className = 'card';
-
             if (card.color === 'wild') {
                 discardPileEl.classList.add('bg-black', 'text-white', 'flex-col');
                 discardPileEl.innerHTML = `
@@ -471,7 +466,6 @@
                 const bgColor = `bg-${card.color}-500`;
                 const textColor = ['blue', 'green'].includes(card.color) ? 'text-white' : 'text-black';
                 discardPileEl.className += ` ${bgColor} ${textColor}`;
-
                 if (['Skip', 'Reverse', 'Draw2'].includes(card.value)) {
                     let symbol = '';
                     switch (card.value) {
@@ -497,59 +491,60 @@
 
         function selectCard(index) {
             if (currentPlayer !== 'player') return;
-
             if (selectedCardIndex >= 0 && selectedCardIndex < playerHand.length) {
                 playerHandEl.children[selectedCardIndex].classList.remove('selected');
             }
-
             selectedCardIndex = index;
             playerHandEl.children[selectedCardIndex].classList.add('selected');
         }
 
         function canPlayCard(card) {
-            if (card.color === 'wild') return true;
-
+            if (card.color === 'wild') {
+                if (card.value === 'Wild_Draw4') {
+                    return !playerHand.some(c => c.color === currentColor && c !== card && canPlayCard(c));
+                }
+                return true;
+            }
             const topCard = discardPile[discardPile.length - 1];
-
             if (topCard.color === 'wild') {
                 return card.color === currentColor;
             }
-
             return card.color === topCard.color || 
                    card.value === topCard.value || 
                    (['Skip', 'Reverse', 'Draw2'].includes(card.value) && card.value === topCard.value);
         }
 
+        function hasValidColorCard(hand) {
+            return hand.some(card => card.color === currentColor && card.color !== 'wild');
+        }
+
         function handleDiscardClick(e) {
             e.preventDefault();
             if (selectedCardIndex === -1 || currentPlayer !== 'player') return;
-
             const card = playerHand[selectedCardIndex];
             if (!canPlayCard(card)) {
                 showMessage('❌ Kartu tidak valid! Pilih warna atau nilai yang cocok.');
                 return;
             }
-
             if (playerHand.length === 1 && !unoCalled) {
                 playerMustDraw();
                 return;
             }
-
             const selectedCardEl = playerHandEl.children[selectedCardIndex];
             const discardRect = discardPileEl.getBoundingClientRect();
             const cardRect = selectedCardEl.getBoundingClientRect();
             const deltaX = discardRect.left - cardRect.left;
             const deltaY = discardRect.top - cardRect.top;
-
             selectedCardEl.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
             selectedCardEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1)`;
             selectedCardEl.style.opacity = '0';
-
             setTimeout(() => {
                 playerHand.splice(selectedCardIndex, 1);
                 discardPile.push(card);
-
-                if (card.color === 'wild') {
+                if (card.value === 'Wild_Draw4') {
+                    isBluffing = hasValidColorCard(playerHand);
+                    showColorChooser();
+                } else if (card.color === 'wild') {
                     showColorChooser();
                 } else {
                     updateGameStateAfterPlay(card);
@@ -557,18 +552,12 @@
                     updateDiscardPile();
                     updateHands();
                     updateCounts();
-
                     if (playerHand.length === 0) {
                         endGame();
                         return;
                     }
-
                     if (currentPlayer === 'computer' && playerHand.length > 0 && computerHand.length > 0) {
                         setTimeout(computerTurn, 1000);
-                    } else if (currentPlayer === 'player') {
-                        // Player gets another turn, no action needed
-                    } else {
-                        endGame();
                     }
                 }
             }, 500);
@@ -583,22 +572,23 @@
             colorChooserEl.classList.add('hidden');
             const card = discardPile[discardPile.length - 1];
             updateGameStateAfterPlay(card);
+            if (card.value === 'Wild_Draw4') {
+                if (currentPlayer === 'player') {
+                    computerDecideBluff(card);
+                } else {
+                    showBluffPrompt();
+                }
+            }
             selectedCardIndex = -1;
             updateDiscardPile();
             updateHands();
             updateCounts();
-
             if (playerHand.length === 0) {
                 endGame();
                 return;
             }
-
             if (currentPlayer === 'computer' && playerHand.length > 0 && computerHand.length > 0) {
                 setTimeout(computerTurn, 1000);
-            } else if (currentPlayer === 'player') {
-                // Player gets another turn, no action needed
-            } else {
-                endGame();
             }
         }
 
@@ -613,15 +603,12 @@
                 return;
             }
             isDrawing = true;
-
             if (deck.length === 0) {
                 reshuffleDeck();
             }
-
             const card = deck.pop();
             playerHand.push(card);
             updateHands();
-
             if (canPlayCard(card)) {
                 const cardIndex = playerHand.length - 1;
                 selectCard(cardIndex);
@@ -631,7 +618,6 @@
                 updateCounts();
                 setTimeout(computerTurn, 1000);
             }
-
             updateCounts();
             isDrawing = false;
         }
@@ -649,14 +635,14 @@
         function computerTurn() {
             currentPlayer = 'computer';
             updateCounts();
-
-            const playableCards = computerHand.filter(card => canPlayCard(card));
-
+            let playableCards = computerHand.filter(card => canPlayCard(card));
+            if (playableCards.some(card => card.value === 'Wild_Draw4') && Math.random() < 0.3) {
+                playableCards = playableCards.filter(card => card.value !== 'Wild_Draw4');
+            }
             if (playableCards.length > 0) {
                 const randomIndex = Math.floor(Math.random() * playableCards.length);
                 const card = playableCards[randomIndex];
                 const cardIndex = computerHand.findIndex(c => c === card);
-
                 const tempCardEl = document.createElement('div');
                 tempCardEl.className = 'card';
                 if (card.color === 'wild') {
@@ -687,29 +673,29 @@
                     }
                 }
                 computerHandEl.children[cardIndex].replaceWith(tempCardEl);
-
                 const discardRect = discardPileEl.getBoundingClientRect();
                 const cardRect = tempCardEl.getBoundingClientRect();
                 const deltaX = discardRect.left - cardRect.left;
                 const deltaY = discardRect.top - cardRect.top;
-
                 tempCardEl.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
                 tempCardEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1)`;
                 tempCardEl.style.opacity = '0';
-
                 setTimeout(() => {
                     computerHand.splice(cardIndex, 1);
                     discardPile.push(card);
-
-                    if (card.color === 'wild') {
+                    if (card.value === 'Wild_Draw4') {
+                        isBluffing = hasValidColorCard(computerHand) && Math.random() < 0.5;
+                        currentColor = computerChooseColor();
+                        showBluffPrompt();
+                    } else if (card.color === 'wild') {
                         currentColor = computerChooseColor();
                         showMessage(`🤖 Komputer memainkan ${card.value.replace('_', ' ')} dan memilih warna ${currentColor}!`);
+                        updateGameStateAfterPlay(card);
+                    } else {
+                        updateGameStateAfterPlay(card);
                     }
-
-                    updateGameStateAfterPlay(card);
                     updateDiscardPile();
                     updateCounts();
-
                     if (computerHand.length === 1) {
                         const shouldCallUno = !computerHand.some(card => 
                             card.color === 'wild' || card.value === 'Draw2');
@@ -720,7 +706,6 @@
                             return;
                         }
                     }
-
                     if (playerHand.length > 0 && computerHand.length > 0) {
                         if (currentPlayer === 'player') {
                             updateCounts();
@@ -730,22 +715,18 @@
                     } else {
                         endGame();
                     }
-
                     updateHands();
                 }, 500);
             } else {
                 if (deck.length === 0) {
                     reshuffleDeck();
                 }
-
                 const card = deck.pop();
                 computerHand.push(card);
                 showMessage('🤖 Komputer mengambil kartu');
-
                 if (canPlayCard(card)) {
                     const cardIndex = computerHand.length - 1;
                     const playedCard = computerHand[cardIndex];
-
                     const tempCardEl = document.createElement('div');
                     tempCardEl.className = 'card';
                     if (playedCard.color === 'wild') {
@@ -776,29 +757,29 @@
                         }
                     }
                     computerHandEl.appendChild(tempCardEl);
-
                     const discardRect = discardPileEl.getBoundingClientRect();
                     const cardRect = tempCardEl.getBoundingClientRect();
                     const deltaX = discardRect.left - cardRect.left;
                     const deltaY = discardRect.top - cardRect.top;
-
                     tempCardEl.style.transition = 'transform 0.5s ease-out, opacity 0.5s ease-out';
                     tempCardEl.style.transform = `translate(${deltaX}px, ${deltaY}px) scale(1)`;
                     tempCardEl.style.opacity = '0';
-
                     setTimeout(() => {
                         computerHand.splice(cardIndex, 1);
                         discardPile.push(playedCard);
-
-                        if (playedCard.color === 'wild') {
+                        if (playedCard.value === 'Wild_Draw4') {
+                            isBluffing = hasValidColorCard(computerHand) && Math.random() < 0.5;
+                            currentColor = computerChooseColor();
+                            showBluffPrompt();
+                        } else if (playedCard.color === 'wild') {
                             currentColor = computerChooseColor();
                             showMessage(`🤖 Komputer memainkan ${playedCard.value.replace('_', ' ')} dan memilih warna ${currentColor}!`);
+                            updateGameStateAfterPlay(playedCard);
+                        } else {
+                            updateGameStateAfterPlay(playedCard);
                         }
-
-                        updateGameStateAfterPlay(playedCard);
                         updateDiscardPile();
                         updateCounts();
-
                         if (computerHand.length === 1) {
                             const shouldCallUno = !computerHand.some(card => 
                                 card.color === 'wild' || card.value === 'Draw2');
@@ -809,7 +790,6 @@
                                 return;
                             }
                         }
-
                         if (playerHand.length > 0 && computerHand.length > 0) {
                             if (currentPlayer === 'player') {
                                 updateCounts();
@@ -819,7 +799,6 @@
                         } else {
                             endGame();
                         }
-
                         updateHands();
                     }, 500);
                 } else {
@@ -834,68 +813,107 @@
             }
         }
 
+        function showBluffPrompt() {
+            messageTextEl.textContent = `🤖 Komputer memainkan +4 dan memilih warna ${currentColor}! Tuduh Bluff?`;
+            messageEl.classList.remove('hidden');
+            bluffBtn.classList.remove('hidden');
+            closeMessageBtn.classList.remove('hidden');
+        }
+
+        function handleBluff() {
+            bluffBtn.classList.add('hidden');
+            if (currentPlayer === 'computer') {
+                if (isBluffing) {
+                    showMessage('✅ Tuduhan benar! Komputer bluffing, mereka ambil 4 kartu!');
+                    computerDrawCards(4);
+                    currentPlayer = 'player';
+                } else {
+                    showMessage('❌ Tuduhan salah! Anda ambil 6 kartu!');
+                    playerDrawCards(6);
+                    currentPlayer = 'player';
+                }
+            }
+            updateHands();
+            updateCounts();
+            if (currentPlayer === 'computer' && playerHand.length > 0 && computerHand.length > 0) {
+                setTimeout(computerTurn, 1000);
+            }
+        }
+
+        function computerDecideBluff(card) {
+            const bluffProbability = isBluffing ? 0.7 : 0.3;
+            if (Math.random() < bluffProbability) {
+                showMessage('🕵️ Komputer menuduh Anda bluffing!');
+                if (isBluffing) {
+                    showMessage('❌ Komputer benar! Anda bluffing, ambil 4 kartu!');
+                    playerDrawCards(4);
+                    currentPlayer = 'computer';
+                } else {
+                    showMessage('✅ Komputer salah! Mereka ambil 6 kartu!');
+                    computerDrawCards(6);
+                    currentPlayer = 'computer';
+                }
+                updateHands();
+                updateCounts();
+                if (currentPlayer === 'computer' && playerHand.length > 0 && computerHand.length > 0) {
+                    setTimeout(computerTurn, 1000);
+                }
+            } else {
+                updateGameStateAfterPlay(card);
+                if (playerHand.length > 0 && computerHand.length > 0) {
+                    setTimeout(computerTurn, 1000);
+                }
+            }
+        }
+
         function updateGameStateAfterPlay(card) {
             if (card.color === 'wild') {
                 currentValue = '';
             } else {
                 currentValue = card.value;
             }
-
             switch (card.value) {
                 case 'Skip':
                     if (currentPlayer === 'player') {
                         showMessage('⏭️ Komputer dilewati!');
-                        // Retain player's turn
                         currentPlayer = 'player';
                     } else {
                         showMessage('⏭️ Anda dilewati!');
-                        // Retain computer's turn
                         currentPlayer = 'computer';
                     }
                     break;
-
                 case 'Reverse':
                     if (currentPlayer === 'player') {
                         showMessage('🔄 Komputer dilewati! (Balik)');
-                        // Retain player's turn
                         currentPlayer = 'player';
                     } else {
                         showMessage('🔄 Anda dilewati! (Balik)');
-                        // Retain computer's turn
                         currentPlayer = 'computer';
                     }
                     break;
-
                 case 'Draw2':
                     if (currentPlayer === 'player') {
                         computerDrawCards(2);
                         showMessage('🤖 Komputer mengambil 2 kartu dan melewatkan gilirannya!');
-                        // Retain player's turn
                         currentPlayer = 'player';
                     } else {
                         playerDrawCards(2);
                         showMessage('😅 Anda mengambil 2 kartu dan melewatkan giliran!');
-                        // Retain computer's turn
                         currentPlayer = 'computer';
                     }
                     break;
-
                 case 'Wild_Draw4':
                     if (currentPlayer === 'player') {
                         computerDrawCards(4);
                         showMessage('🤖 Komputer mengambil 4 kartu dan melewatkan gilirannya!');
-                        // Retain player's turn
                         currentPlayer = 'player';
                     } else {
                         playerDrawCards(4);
                         showMessage('😰 Anda mengambil 4 kartu dan melewatkan giliran!');
-                        // Retain computer's turn
                         currentPlayer = 'computer';
                     }
                     break;
-
                 default:
-                    // Switch turns for regular cards
                     currentPlayer = currentPlayer === 'player' ? 'computer' : 'player';
                     break;
             }
@@ -949,12 +967,10 @@
 
         function reshuffleDeck() {
             if (discardPile.length <= 1) return;
-
             const topCard = discardPile.pop();
             deck = discardPile;
             shuffleDeck();
             discardPile = [topCard];
-
             showMessage('🔄 Dek telah diacak ulang!');
         }
 
@@ -974,16 +990,21 @@
                 playAgainBtn.classList.remove('hidden');
                 backBtn.classList.remove('hidden');
                 closeMessageBtn.classList.add('hidden');
+                bluffBtn.classList.add('hidden');
                 launchConfetti();
             } else {
                 playAgainBtn.classList.add('hidden');
                 backBtn.classList.add('hidden');
-                closeMessageBtn.classList.remove('hidden');
+                if (!text.includes('Tuduh Bluff')) {
+                    closeMessageBtn.classList.remove('hidden');
+                    bluffBtn.classList.add('hidden');
+                }
             }
         }
 
         function closeMessage() {
             messageEl.classList.add('hidden');
+            bluffBtn.classList.add('hidden');
         }
 
         function endGame() {
@@ -1007,6 +1028,7 @@
             window.location.href = '/';
         });
         closeMessageBtn.addEventListener('click', closeMessage);
+        bluffBtn.addEventListener('click', handleBluff);
 
         window.addEventListener('load', initGame);
     </script>
