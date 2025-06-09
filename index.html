@@ -10,15 +10,15 @@
         @import url('https://fonts.googleapis.com/css2?family=Fredoka+One:wght@400&family=Poppins:wght@300;400;600;700&display=swap');
 
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4b5e9a 0%, #5e3a7d 100%); /* Adjusted for WCAG contrast */
             font-family: 'Poppins', sans-serif;
             overscroll-behavior: none;
         }
 
         .game-container {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             max-width: 90vw;
             margin: auto;
             min-height: calc(100vh - 2rem);
@@ -34,10 +34,15 @@
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
             position: relative;
-            border: 2px solid rgba(255,255,255,0.8);
+            border: 2px solid #ffffff;
             font-size: 0.9rem;
+        }
+
+        .card:focus {
+            outline: 3px solid #ffd700;
+            outline-offset: 2px;
         }
 
         .card::before {
@@ -47,14 +52,14 @@
             left: -2px;
             right: -2px;
             bottom: -2px;
-            background: linear-gradient(45deg, rgba(255,255,255,0.3), transparent);
+            background: linear-gradient(45deg, rgba(255,255,255,0.4), transparent);
             border-radius: 10px;
             z-index: -1;
         }
 
-        .card:hover {
+        .card:hover, .card:focus {
             transform: translateY(-10px) scale(1.05);
-            box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+            box-shadow: 0 12px 30px rgba(0,0,0,0.3);
         }
 
         .card.selected {
@@ -65,11 +70,11 @@
 
         @keyframes selectedPulse {
             0%, 100% { box-shadow: 0 0 0 3px #ffd700, 0 15px 30px rgba(0,0,0,0.3); }
-            50% { box-shadow: 0 0 0 6px rgba(255, 215, 0, 0.5), 0 15px 30px rgba(0,0,0,0.3); }
+            50% { box-shadow: 0 0 0 6px rgba(255, 215, 0, 0.6), 0 15px 30px rgba(0,0,0,0.3); }
         }
 
         .card-back {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+            background: linear-gradient(135deg, #b71c1c 0%, #d32f2f 100%); /* WCAG-compliant red */
             position: relative;
             overflow: hidden;
         }
@@ -82,12 +87,12 @@
             transform: translate(-50%, -50%) rotate(-20deg);
             font-family: 'Fredoka One', cursive;
             font-size: 1rem;
-            color: rgba(255,255,255,0.9);
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+            color: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.4);
         }
 
         .game-center {
-            background: rgba(255, 255, 255, 0.15);
+            background: rgba(255, 255, 255, 0.25);
             backdrop-filter: blur(10px);
             border-radius: 15px;
             padding: 1.5rem;
@@ -99,45 +104,47 @@
         }
 
         .draw-pile {
-            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
-            border: 2px dashed rgba(255,255,255,0.6);
+            background: linear-gradient(135deg, #00897b 0%, #00695c 100%); /* WCAG-compliant teal */
+            border: 2px dashed rgba(255,255,255,0.7);
         }
 
-        .draw-pile:hover {
-            background: linear-gradient(135deg, #5fd8cf 0%, #4fb3a0 100%);
+        .draw-pile:hover, .draw-pile:focus {
+            background: linear-gradient(135deg, #009688 0%, #00796b 100%);
             transform: scale(1.05);
         }
 
         .game-stats {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(10px);
             border-radius: 12px;
             padding: 1rem;
         }
 
         .player-area {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.15);
             backdrop-filter: blur(10px);
             border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
             padding: 1rem;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4b5e9a 0%, #5e3a7d 100%);
+            color: #ffffff;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 4px 15px rgba(75, 94, 154, 0.5);
         }
 
-        .btn-primary:hover:not(:disabled) {
+        .btn-primary:hover:not(:disabled), .btn-primary:focus {
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+            box-shadow: 0 6px 20px rgba(75, 94, 154, 0.7);
         }
 
         .btn-uno {
-            background: linear-gradient(135deg, #ff6b6b 0%, #ffa500 100%);
+            background: linear-gradient(135deg, #d32f2f 0%, #f57c00 100%); /* WCAG-compliant */
+            color: #ffffff;
             animation: unoPulse 1.5s infinite;
-            box-shadow: 0 4px 15px rgba(255, 107, 107, 0.4);
+            box-shadow: 0 4px 15px rgba(211, 47, 47, 0.5);
         }
 
         @keyframes unoPulse {
@@ -146,14 +153,14 @@
         }
 
         .message-modal {
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.85);
             backdrop-filter: blur(5px);
         }
 
         .message-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #4b5e9a 0%, #5e3a7d 100%);
             border-radius: 15px;
-            box-shadow: 0 15px 30px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.4);
         }
 
         .color-btn {
@@ -162,10 +169,12 @@
             border-radius: 8px;
             cursor: pointer;
             transition: transform 0.2s ease;
+            border: 2px solid #ffffff;
         }
 
-        .color-btn:hover {
+        .color-btn:hover, .color-btn:focus {
             transform: scale(1.1);
+            outline: 3px solid #ffd700;
         }
 
         /* Tablet Breakpoint */
@@ -266,70 +275,70 @@
         }
 
         .title-glow {
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            text-shadow: 0 0 20px rgba(255,255,255,0.6);
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
-    <main class="flex-grow flex flex-col game-container mx-2 my-4 rounded-xl">
-        <div class="player-area mx-2 my-2 p-2">
+    <main class="flex-grow flex flex-col game-container mx-2 my-4 rounded-xl" role="main" aria-label="Area permainan UNO">
+        <div class="player-area mx-2 my-2 p-2" role="region" aria-label="Tangan komputer">
             <div id="computer-hand" class="flex justify-center flex-wrap gap-2 min-h-[120px] items-center">
             </div>
         </div>
 
         <div class="flex-grow flex justify-center items-center p-2">
-            <div class="game-center relative">
+            <div class="game-center relative" role="region" aria-label="Area tengah permainan">
                 <div class="text-center">
-                    <div id="discard-pile" class="card bg-white"></div>
+                    <div id="discard-pile" class="card bg-white" role="img" aria-label="Tumpukan buangan"></div>
                 </div>
                 <div class="text-center">
-                    <div id="draw-pile" class="card draw-pile cursor-pointer">
+                    <div id="draw-pile" class="card draw-pile cursor-pointer" role="button" aria-label="Tumpukan ambil kartu" tabindex="0">
                         <div class="text-white text-3xl">?</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="player-area mx-2 my-2 p-2">
+        <div class="player-area mx-2 my-2 p-2" role="region" aria-label="Tangan pemain">
             <div id="player-hand" class="flex justify-center flex-wrap gap-2 min-h-[120px] items-center">
             </div>
         </div>
     </main>
 
-    <div class="game-stats mx-2 my-2 py-2 px-4 flex flex-wrap justify-center gap-3">
-        <button id="uno-btn" class="btn-uno text-white px-4 py-2 rounded-full font-semibold hidden transition-all">
+    <div class="game-stats mx-2 my-2 py-2 px-4 flex flex-wrap justify-center gap-3" role="region" aria-label="Status permainan">
+        <button id="uno-btn" class="btn-uno text-white px-4 py-2 rounded-full font-semibold hidden transition-all" aria-label="Panggil UNO" tabindex="0">
             🔥 UNO!
         </button>
     </div>
 
-    <div id="message" class="message-modal fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div id="message" class="message-modal fixed inset-0 flex items-center justify-center z-50 hidden" role="dialog" aria-live="assertive">
         <div class="message-content text-white px-6 py-4 mx-4 max-w-md w-full text-center">
             <p id="message-text" class="text-lg md:text-xl mb-4 font-semibold"></p>
             <div id="message-buttons" class="flex justify-center gap-3">
-                <button id="play-again-btn" class="btn-primary text-white px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all hidden">
+                <button id="play-again-btn" class="btn-primary text-white px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all hidden" aria-label="Main lagi" tabindex="0">
                     Main Lagi
                 </button>
-                <button id="back-btn" class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all hidden">
+                <button id="back-btn" class="bg-white text-purple-800 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all hidden" aria-label="Kembali ke menu utama" tabindex="0">
                     Kembali
                 </button>
-                <button id="close-message" class="bg-white text-purple-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all">
+                <button id="close-message" class="bg-white text-purple-800 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition-all" aria-label="Lanjutkan permainan" tabindex="0">
                     Lanjut
                 </button>
-                <button id="bluff-btn" class="bg-yellow-500 text-black px-4 py-2 rounded-full font-semibold hover:bg-yellow-400 transition-all hidden">
+                <button id="bluff-btn" class="bg-yellow-600 text-black px-4 py-2 rounded-full font-semibold hover:bg-yellow-500 transition-all hidden" aria-label="Tuduh komputer bluffing" tabindex="0">
                     Tuduh BLUFF!
                 </button>
             </div>
         </div>
     </div>
 
-    <div id="color-chooser" class="message-modal fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div id="color-chooser" class="message-modal fixed inset-0 flex items-center justify-center z-50 hidden" role="dialog" aria-label="Pilih warna untuk kartu Wild">
         <div class="message-content text-white px-6 py-4 mx-4 max-w-md w-full text-center">
             <p class="text-lg md:text-xl mb-4 font-semibold">Pilih warna</p>
             <div class="flex justify-center gap-3">
-                <div class="color-btn bg-red-500" data-color="red"></div>
-                <div class="color-btn bg-blue-500" data-color="blue"></div>
-                <div class="color-btn bg-green-500" data-color="green"></div>
-                <div class="color-btn bg-yellow-500" data-color="yellow"></div>
+                <div class="color-btn bg-red-700" data-color="red" role="button" aria-label="Pilih warna merah" tabindex="0"></div>
+                <div class="color-btn bg-blue-800" data-color="blue" role="button" aria-label="Pilih warna biru" tabindex="0"></div>
+                <div class="color-btn bg-green-800" data-color="green" role="button" aria-label="Pilih warna hijau" tabindex="0"></div>
+                <div class="color-btn bg-yellow-600" data-color="yellow" role="button" aria-label="Pilih warna kuning" tabindex="0"></div>
             </div>
         </div>
     </div>
@@ -405,11 +414,25 @@
             drawPileEl.removeEventListener('touchstart', handleDraw);
             drawPileEl.addEventListener('click', handleDraw);
             drawPileEl.addEventListener('touchstart', handleDraw);
+            drawPileEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleDraw(e);
+                }
+            });
 
             discardPileEl.removeEventListener('click', handleDiscardClick);
             discardPileEl.removeEventListener('touchstart', handleDiscardClick);
             discardPileEl.addEventListener('click', handleDiscardClick);
             discardPileEl.addEventListener('touchstart', handleDiscardClick);
+            discardPileEl.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    handleDiscardClick(e);
+                }
+            });
+
+            document.addEventListener('keydown', handleKeyboardNavigation);
         }
 
         function createDeck() {
@@ -456,6 +479,7 @@
             currentColor = card.color;
             currentValue = card.value;
             updateDiscardPile();
+            announce(`Permainan dimulai! Kartu awal: ${card.color} ${card.value}`);
         }
 
         function updateHands() {
@@ -463,6 +487,7 @@
             for (let i = 0; i < computerHand.length; i++) {
                 const cardEl = document.createElement('div');
                 cardEl.className = 'card card-back';
+                cardEl.setAttribute('aria-hidden', 'true');
                 computerHandEl.appendChild(cardEl);
             }
 
@@ -471,20 +496,23 @@
                 const card = playerHand[i];
                 const cardEl = document.createElement('div');
                 cardEl.className = 'card';
+                cardEl.setAttribute('role', 'button');
+                cardEl.setAttribute('tabindex', '0');
+                cardEl.setAttribute('aria-label', `Kartu ${card.color} ${card.value}`);
                 if (card.color === 'wild') {
-                    cardEl.classList.add('bg-black', 'text-white', 'flex-col');
+                    cardEl.classList.add('bg-gray-900', 'text-white', 'flex-col');
                     cardEl.innerHTML = `
                         <div class="text-xs mb-1">${card.value.replace('_', ' ')}</div>
                         <div class="flex w-full h-4 rounded">
-                            <div class="w-1/4 bg-red-500 rounded-l"></div>
-                            <div class="w-1/4 bg-blue-500"></div>
-                            <div class="w-1/4 bg-green-500"></div>
-                            <div class="w-1/4 bg-yellow-500 rounded-r"></div>
+                            <div class="w-1/4 bg-red-700 rounded-l"></div>
+                            <div class="w-1/4 bg-blue-800"></div>
+                            <div class="w-1/4 bg-green-800"></div>
+                            <div class="w-1/4 bg-yellow-600 rounded-r"></div>
                         </div>
                     `;
                 } else {
-                    const bgColor = `bg-${card.color}-500`;
-                    const textColor = ['blue', 'green'].includes(card.color) ? 'text-white' : 'text-black';
+                    const bgColor = `bg-${card.color}-700`; /* Darker colors for contrast */
+                    const textColor = 'text-white'; /* High contrast text */
                     cardEl.className += ` ${bgColor} ${textColor}`;
                     if (['Skip', 'Reverse', 'Draw2'].includes(card.value)) {
                         let symbol = '';
@@ -499,12 +527,21 @@
                     }
                 }
                 cardEl.addEventListener('click', () => selectCard(i));
+                cardEl.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        selectCard(i);
+                    }
+                });
                 playerHandEl.appendChild(cardEl);
             }
 
             if (selectedCardIndex >= 0 && selectedCardIndex < playerHand.length) {
                 playerHandEl.children[selectedCardIndex].classList.add('selected');
+                playerHandEl.children[selectedCardIndex].focus();
             }
+
+            announce(`Tangan Anda: ${playerHand.map(card => `${card.color} ${card.value}`).join(', ')}`);
         }
 
         function updateDiscardPile() {
@@ -512,20 +549,21 @@
             const card = discardPile[discardPile.length - 1];
             discardPileEl.innerHTML = '';
             discardPileEl.className = 'card';
+            discardPileEl.setAttribute('aria-label', `Kartu di tumpukan buangan: ${card.color} ${card.value}`);
             if (card.color === 'wild') {
-                discardPileEl.classList.add('bg-black', 'text-white', 'flex-col');
+                discardPileEl.classList.add('bg-gray-900', 'text-white', 'flex-col');
                 discardPileEl.innerHTML = `
                     <div class="text-xs mb-1">${card.value.replace('_', ' ')}</div>
                     <div class="flex w-full h-4 rounded">
-                        <div class="w-1/4 bg-red-500 rounded-l"></div>
-                        <div class="w-1/4 bg-blue-500"></div>
-                        <div class="w-1/4 bg-green-500"></div>
-                        <div class="w-1/4 bg-yellow-500 rounded-r"></div>
+                        <div class="w-1/4 bg-red-700 rounded-l"></div>
+                        <div class="w-1/4 bg-blue-800"></div>
+                        <div class="w-1/4 bg-green-800"></div>
+                        <div class="w-1/4 bg-yellow-600 rounded-r"></div>
                     </div>
                 `;
             } else {
-                const bgColor = `bg-${card.color}-500`;
-                const textColor = ['blue', 'green'].includes(card.color) ? 'text-white' : 'text-black';
+                const bgColor = `bg-${card.color}-700`;
+                const textColor = 'text-white';
                 discardPileEl.className += ` ${bgColor} ${textColor}`;
                 if (['Skip', 'Reverse', 'Draw2'].includes(card.value)) {
                     let symbol = '';
@@ -539,11 +577,14 @@
                     discardPileEl.textContent = card.value;
                 }
             }
+            announce(`Kartu di tumpukan buangan: ${card.color} ${card.value}`);
         }
 
         function updateCounts() {
             if (playerHand.length === 1) {
                 unoBtn.classList.remove('hidden');
+                unoBtn.focus();
+                announce('Anda memiliki satu kartu! Tekan U untuk memanggil UNO.');
             } else {
                 unoBtn.classList.add('hidden');
                 unoCalled = false;
@@ -551,12 +592,32 @@
         }
 
         function selectCard(index) {
-            if (currentPlayer !== 'player') return;
+            if (currentPlayer !== 'player') {
+                announce('Bukan giliran Anda!');
+                return;
+            }
             if (selectedCardIndex >= 0 && selectedCardIndex < playerHand.length) {
                 playerHandEl.children[selectedCardIndex].classList.remove('selected');
             }
             selectedCardIndex = index;
             playerHandEl.children[selectedCardIndex].classList.add('selected');
+            playerHandEl.children[selectedCardIndex].focus();
+            announce(`Kartu yang dipilih: ${playerHand[index].color} ${playerHand[index].value}. Tekan Enter untuk memainkan kartu.`);
+        }
+
+        function handleKeyboardNavigation(e) {
+            if (currentPlayer !== 'player') return;
+            if (e.key === 'ArrowRight' && selectedCardIndex < playerHand.length - 1) {
+                selectCard(selectedCardIndex + 1);
+            } else if (e.key === 'ArrowLeft' && selectedCardIndex > 0) {
+                selectCard(selectedCardIndex - 1);
+            } else if (e.key === 'Enter' && selectedCardIndex >= 0) {
+                handleDiscardClick(e);
+            } else if (e.key.toLowerCase() === 'u' && playerHand.length === 1) {
+                callUno();
+            } else if (e.key === 'd') {
+                handleDraw(e);
+            }
         }
 
         function canPlayCard(card) {
@@ -581,7 +642,10 @@
 
         function handleDiscardClick(e) {
             e.preventDefault();
-            if (selectedCardIndex === -1 || currentPlayer !== 'player') return;
+            if (selectedCardIndex === -1 || currentPlayer !== 'player') {
+                announce('Pilih kartu terlebih dahulu atau bukan giliran Anda!');
+                return;
+            }
             const card = playerHand[selectedCardIndex];
             if (!canPlayCard(card)) {
                 showMessage('❌ Kartu tidak valid! Pilih warna atau nilai yang cocok.');
@@ -602,6 +666,7 @@
             setTimeout(() => {
                 playerHand.splice(selectedCardIndex, 1);
                 discardPile.push(card);
+                announce(`Anda memainkan kartu ${card.color} ${card.value}`);
                 if (card.value === 'Wild_Draw4') {
                     isBluffing = hasValidColorCard(playerHand);
                     showColorChooser();
@@ -626,12 +691,15 @@
 
         function showColorChooser() {
             colorChooserEl.classList.remove('hidden');
+            colorButtons[0].focus();
+            announce('Pilih warna untuk kartu Wild. Gunakan panah untuk navigasi, Enter untuk memilih.');
         }
 
         function chooseColor(color) {
             currentColor = color;
             colorChooserEl.classList.add('hidden');
             const card = discardPile[discardPile.length - 1];
+            announce(`Warna dipilih: ${color}`);
             updateGameStateAfterPlay(card);
             if (card.value === 'Wild_Draw4') {
                 if (currentPlayer === 'player') {
@@ -669,6 +737,7 @@
             }
             const card = deck.pop();
             playerHand.push(card);
+            announce(`Anda mengambil kartu: ${card.color} ${card.value}`);
             updateHands();
             if (canPlayCard(card)) {
                 const cardIndex = playerHand.length - 1;
@@ -707,19 +776,19 @@
                 const tempCardEl = document.createElement('div');
                 tempCardEl.className = 'card';
                 if (card.color === 'wild') {
-                    tempCardEl.classList.add('bg-black', 'text-white', 'flex-col');
+                    tempCardEl.classList.add('bg-gray-900', 'text-white', 'flex-col');
                     tempCardEl.innerHTML = `
                         <div class="text-xs mb-1">${card.value.replace('_', ' ')}</div>
                         <div class="flex w-full h-4 rounded">
-                            <div class="w-1/4 bg-red-500 rounded-l"></div>
-                            <div class="w-1/4 bg-blue-500"></div>
-                            <div class="w-1/4 bg-green-500"></div>
-                            <div class="w-1/4 bg-yellow-500 rounded-r"></div>
+                            <div class="w-1/4 bg-red-700 rounded-l"></div>
+                            <div class="w-1/4 bg-blue-800"></div>
+                            <div class="w-1/4 bg-green-800"></div>
+                            <div class="w-1/4 bg-yellow-600 rounded-r"></div>
                         </div>
                     `;
                 } else {
-                    const bgColor = `bg-${card.color}-500`;
-                    const textColor = ['blue', 'green'].includes(card.color) ? 'text-white' : 'text-black';
+                    const bgColor = `bg-${card.color}-700`;
+                    const textColor = 'text-white';
                     tempCardEl.className += ` ${bgColor} ${textColor}`;
                     if (['Skip', 'Reverse', 'Draw2'].includes(card.value)) {
                         let symbol = '';
@@ -744,6 +813,7 @@
                 setTimeout(() => {
                     computerHand.splice(cardIndex, 1);
                     discardPile.push(card);
+                    announce(`Komputer memainkan kartu ${card.color} ${card.value}`);
                     if (card.value === 'Wild_Draw4') {
                         isBluffing = hasValidColorCard(computerHand) && Math.random() < 0.5;
                         currentColor = computerChooseColor();
@@ -791,19 +861,19 @@
                     const tempCardEl = document.createElement('div');
                     tempCardEl.className = 'card';
                     if (playedCard.color === 'wild') {
-                        tempCardEl.classList.add('bg-black', 'text-white', 'flex-col');
+                        tempCardEl.classList.add('bg-gray-900', 'text-white', 'flex-col');
                         tempCardEl.innerHTML = `
                             <div class="text-xs mb-1">${playedCard.value.replace('_', ' ')}</div>
                             <div class="flex w-full h-4 rounded">
-                                <div class="w-1/4 bg-red-500 rounded-l"></div>
-                                <div class="w-1/4 bg-blue-500"></div>
-                                <div class="w-1/4 bg-green-500"></div>
-                                <div class="w-1/4 bg-yellow-500 rounded-r"></div>
+                                <div class="w-1/4 bg-red-700 rounded-l"></div>
+                                <div class="w-1/4 bg-blue-800"></div>
+                                <div class="w-1/4 bg-green-800"></div>
+                                <div class="w-1/4 bg-yellow-600 rounded-r"></div>
                             </div>
                         `;
                     } else {
-                        const bgColor = `bg-${playedCard.color}-500`;
-                        const textColor = ['blue', 'green'].includes(playedCard.color) ? 'text-white' : 'text-black';
+                        const bgColor = `bg-${playedCard.color}-700`;
+                        const textColor = 'text-white';
                         tempCardEl.className += ` ${bgColor} ${textColor}`;
                         if (['Skip', 'Reverse', 'Draw2'].includes(playedCard.value)) {
                             let symbol = '';
@@ -828,6 +898,7 @@
                     setTimeout(() => {
                         computerHand.splice(cardIndex, 1);
                         discardPile.push(playedCard);
+                        announce(`Komputer memainkan kartu ${playedCard.color} ${playedCard.value}`);
                         if (playedCard.value === 'Wild_Draw4') {
                             isBluffing = hasValidColorCard(computerHand) && Math.random() < 0.5;
                             currentColor = computerChooseColor();
@@ -866,6 +937,7 @@
                     if (playerHand.length > 0 && computerHand.length > 0) {
                         currentPlayer = 'player';
                         updateCounts();
+                        announce('Giliran Anda!');
                     } else {
                         endGame();
                     }
@@ -879,6 +951,8 @@
             messageEl.classList.remove('hidden');
             bluffBtn.classList.remove('hidden');
             closeMessageBtn.classList.remove('hidden');
+            bluffBtn.focus();
+            announce(`Komputer memainkan +4 dan memilih warna ${currentColor}. Tekan B untuk menuduh bluff, atau Enter untuk melanjutkan.`);
         }
 
         function handleBluff() {
@@ -888,10 +962,12 @@
                     showMessage('✅ Tuduhan benar! Komputer bluffing, mereka ambil 4 kartu!');
                     computerDrawCards(4);
                     currentPlayer = 'player';
+                    announce('Tuduhan Anda benar! Komputer mengambil 4 kartu. Giliran Anda.');
                 } else {
                     showMessage('❌ Tuduhan salah! Anda ambil 6 kartu!');
                     playerDrawCards(6);
                     currentPlayer = 'player';
+                    announce('Tuduhan Anda salah! Anda mengambil 6 kartu. Giliran Anda.');
                 }
             }
             updateHands();
@@ -909,10 +985,12 @@
                     showMessage('❌ Komputer benar! Anda bluffing, ambil 4 kartu!');
                     playerDrawCards(4);
                     currentPlayer = 'computer';
+                    announce('Komputer menuduh Anda bluffing dan benar! Anda mengambil 4 kartu.');
                 } else {
                     showMessage('✅ Komputer salah! Mereka ambil 6 kartu!');
                     computerDrawCards(6);
                     currentPlayer = 'computer';
+                    announce('Komputer menuduh Anda bluffing tetapi salah! Mereka mengambil 6 kartu.');
                 }
                 updateHands();
                 updateCounts();
@@ -939,18 +1017,22 @@
                     if (currentPlayer === 'player') {
                         showMessage('⏭️ Komputer dilewati!');
                         currentPlayer = 'player';
+                        announce('Anda memainkan Skip. Komputer dilewati. Giliran Anda lagi.');
                     } else {
                         showMessage('⏭️ Anda dilewati!');
                         currentPlayer = 'computer';
+                        announce('Komputer memainkan Skip. Anda dilewati.');
                     }
                     break;
                 case 'Reverse':
                     if (currentPlayer === 'player') {
                         showMessage('🔄 Komputer dilewati! (Balik)');
                         currentPlayer = 'player';
+                        announce('Anda memainkan Reverse. Komputer dilewati. Giliran Anda lagi.');
                     } else {
                         showMessage('🔄 Anda dilewati! (Balik)');
                         currentPlayer = 'computer';
+                        announce('Komputer memainkan Reverse. Anda dilewati.');
                     }
                     break;
                 case 'Draw2':
@@ -958,10 +1040,12 @@
                         computerDrawCards(2);
                         showMessage('🤖 Komputer mengambil 2 kartu dan melewatkan gilirannya!');
                         currentPlayer = 'player';
+                        announce('Anda memainkan Draw Two. Komputer mengambil 2 kartu dan dilewati.');
                     } else {
                         playerDrawCards(2);
                         showMessage('😅 Anda mengambil 2 kartu dan melewatkan giliran!');
                         currentPlayer = 'computer';
+                        announce('Komputer memainkan Draw Two. Anda mengambil 2 kartu dan dilewati.');
                     }
                     break;
                 case 'Wild_Draw4':
@@ -969,14 +1053,17 @@
                         computerDrawCards(4);
                         showMessage('🤖 Komputer mengambil 4 kartu dan melewatkan gilirannya!');
                         currentPlayer = 'player';
+                        announce('Anda memainkan Wild Draw Four. Komputer mengambil 4 kartu dan dilewati.');
                     } else {
                         playerDrawCards(4);
                         showMessage('😰 Anda mengambil 4 kartu dan melewatkan giliran!');
                         currentPlayer = 'computer';
+                        announce('Komputer memainkan Wild Draw Four. Anda mengambil 4 kartu dan dilewati.');
                     }
                     break;
                 default:
                     currentPlayer = currentPlayer === 'player' ? 'computer' : 'player';
+                    announce(currentPlayer === 'player' ? 'Giliran Anda!' : 'Giliran komputer.');
                     break;
             }
         }
@@ -986,12 +1073,14 @@
                 unoCalled = true;
                 unoBtn.classList.add('hidden');
                 showMessage('🔥 UNO! Anda memiliki 1 kartu tersisa!');
+                announce('Anda memanggil UNO!');
             }
         }
 
         function playerMustDraw() {
             playerDrawCards(2);
             showMessage('😬 Anda lupa memanggil UNO! Ambil 2 kartu.');
+            announce('Anda lupa memanggil UNO! Mengambil 2 kartu.');
             selectedCardIndex = -1;
             updateHands();
             updateCounts();
@@ -1002,6 +1091,7 @@
             computerDrawCards(2);
             showMessage('🤖 Komputer lupa memanggil UNO! Mengambil 2 kartu.');
             currentPlayer = 'player';
+            announce('Komputer lupa memanggil UNO! Mengambil 2 kartu. Giliran Anda.');
             updateCounts();
         }
 
@@ -1034,6 +1124,7 @@
             shuffleDeck();
             discardPile = [topCard];
             showMessage('🔄 Dek telah diacak ulang!');
+            announce('Dek telah diacak ulang!');
         }
 
         function launchConfetti() {
@@ -1041,7 +1132,7 @@
                 particleCount: 100,
                 spread: 70,
                 origin: { y: 0.6 },
-                colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00']
+                colors: ['#b71c1c', '#00695c', '#01579b', '#f57c00'] /* WCAG-compliant colors */
             });
         }
 
@@ -1054,19 +1145,27 @@
                 closeMessageBtn.classList.add('hidden');
                 bluffBtn.classList.add('hidden');
                 launchConfetti();
+                playAgainBtn.focus();
             } else {
                 playAgainBtn.classList.add('hidden');
                 backBtn.classList.add('hidden');
                 if (!text.includes('Tuduh Bluff')) {
                     closeMessageBtn.classList.remove('hidden');
                     bluffBtn.classList.add('hidden');
+                    closeMessageBtn.focus();
                 }
             }
+            announce(text);
         }
 
         function closeMessage() {
             messageEl.classList.add('hidden');
             bluffBtn.classList.add('hidden');
+            if (selectedCardIndex >= 0 && selectedCardIndex < playerHand.length) {
+                playerHandEl.children[selectedCardIndex].focus();
+            } else {
+                drawPileEl.focus();
+            }
         }
 
         function endGame() {
@@ -1077,20 +1176,69 @@
             }
         }
 
+        function announce(text) {
+            const liveRegion = document.createElement('div');
+            liveRegion.setAttribute('aria-live', 'polite');
+            liveRegion.setAttribute('aria-atomic', 'true');
+            liveRegion.setAttribute('style', 'position: absolute; left: -9999px;');
+            liveRegion.textContent = text;
+            document.body.appendChild(liveRegion);
+            setTimeout(() => {
+                document.body.removeChild(liveRegion);
+            }, 1000);
+        }
+
         colorButtons.forEach(button => {
             button.addEventListener('click', () => {
                 const color = button.getAttribute('data-color');
                 chooseColor(color);
             });
+            button.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const color = button.getAttribute('data-color');
+                    chooseColor(color);
+                }
+            });
         });
 
         unoBtn.addEventListener('click', callUno);
+        unoBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                callUno();
+            }
+        });
         playAgainBtn.addEventListener('click', initGame);
+        playAgainBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                initGame();
+            }
+        });
         backBtn.addEventListener('click', () => {
             window.location.href = '/';
         });
+        backBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                window.location.href = '/';
+            }
+        });
         closeMessageBtn.addEventListener('click', closeMessage);
+        closeMessageBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                closeMessage();
+            }
+        });
         bluffBtn.addEventListener('click', handleBluff);
+        bluffBtn.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                handleBluff();
+            }
+        });
 
         window.addEventListener('load', initGame);
     </script>
