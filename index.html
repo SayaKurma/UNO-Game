@@ -563,8 +563,10 @@
                         return;
                     }
 
-                    if (playerHand.length > 0 && computerHand.length > 0) {
+                    if (currentPlayer === 'computer' && playerHand.length > 0 && computerHand.length > 0) {
                         setTimeout(computerTurn, 1000);
+                    } else if (currentPlayer === 'player') {
+                        // Player gets another turn, no action needed
                     } else {
                         endGame();
                     }
@@ -591,8 +593,10 @@
                 return;
             }
 
-            if (playerHand.length > 0 && computerHand.length > 0) {
+            if (currentPlayer === 'computer' && playerHand.length > 0 && computerHand.length > 0) {
                 setTimeout(computerTurn, 1000);
+            } else if (currentPlayer === 'player') {
+                // Player gets another turn, no action needed
             } else {
                 endGame();
             }
@@ -718,8 +722,11 @@
                     }
 
                     if (playerHand.length > 0 && computerHand.length > 0) {
-                        currentPlayer = 'player';
-                        updateCounts();
+                        if (currentPlayer === 'player') {
+                            updateCounts();
+                        } else {
+                            setTimeout(computerTurn, 1000);
+                        }
                     } else {
                         endGame();
                     }
@@ -804,8 +811,11 @@
                         }
 
                         if (playerHand.length > 0 && computerHand.length > 0) {
-                            currentPlayer = 'player';
-                            updateCounts();
+                            if (currentPlayer === 'player') {
+                                updateCounts();
+                            } else {
+                                setTimeout(computerTurn, 1000);
+                            }
                         } else {
                             endGame();
                         }
@@ -835,16 +845,24 @@
                 case 'Skip':
                     if (currentPlayer === 'player') {
                         showMessage('⏭️ Komputer dilewati!');
+                        // Retain player's turn
+                        currentPlayer = 'player';
                     } else {
                         showMessage('⏭️ Anda dilewati!');
+                        // Retain computer's turn
+                        currentPlayer = 'computer';
                     }
                     break;
 
                 case 'Reverse':
                     if (currentPlayer === 'player') {
                         showMessage('🔄 Komputer dilewati! (Balik)');
+                        // Retain player's turn
+                        currentPlayer = 'player';
                     } else {
                         showMessage('🔄 Anda dilewati! (Balik)');
+                        // Retain computer's turn
+                        currentPlayer = 'computer';
                     }
                     break;
 
@@ -852,9 +870,13 @@
                     if (currentPlayer === 'player') {
                         computerDrawCards(2);
                         showMessage('🤖 Komputer mengambil 2 kartu!');
+                        // Switch to computer after Draw2 effect
+                        currentPlayer = 'computer';
                     } else {
                         playerDrawCards(2);
                         showMessage('😅 Anda mengambil 2 kartu!');
+                        // Switch to player after Draw2 effect
+                        currentPlayer = 'player';
                     }
                     break;
 
@@ -862,10 +884,19 @@
                     if (currentPlayer === 'player') {
                         computerDrawCards(4);
                         showMessage('🤖 Komputer mengambil 4 kartu!');
+                        // Switch to computer after Wild_Draw4 effect
+                        currentPlayer = 'computer';
                     } else {
                         playerDrawCards(4);
                         showMessage('😰 Anda mengambil 4 kartu!');
+                        // Switch to player after Wild_Draw4 effect
+                        currentPlayer = 'player';
                     }
+                    break;
+
+                default:
+                    // Switch turns for regular cards
+                    currentPlayer = currentPlayer === 'player' ? 'computer' : 'player';
                     break;
             }
         }
