@@ -703,7 +703,7 @@
 
                     if (card.color === 'wild') {
                         currentColor = computerChooseColor();
-                        showMessage(`🤖 Komputer memilih ${currentColor}!`);
+                        showMessage(`🤖 Komputer memainkan ${card.value.replace('_', ' ')} dan memilih warna ${currentColor}!`);
                     }
 
                     updateGameStateAfterPlay(card);
@@ -792,7 +792,7 @@
 
                         if (playedCard.color === 'wild') {
                             currentColor = computerChooseColor();
-                            showMessage(`🤖 Komputer memilih ${currentColor}!`);
+                            showMessage(`🤖 Komputer memainkan ${playedCard.value.replace('_', ' ')} dan memilih warna ${currentColor}!`);
                         }
 
                         updateGameStateAfterPlay(playedCard);
@@ -883,14 +883,14 @@
                 case 'Wild_Draw4':
                     if (currentPlayer === 'player') {
                         computerDrawCards(4);
-                        showMessage('🤖 Komputer mengambil 4 kartu!');
-                        // Switch to computer after Wild_Draw4 effect
-                        currentPlayer = 'computer';
+                        showMessage('🤖 Komputer mengambil 4 kartu dan melewatkan gilirannya!');
+                        // Retain player's turn
+                        currentPlayer = 'player';
                     } else {
                         playerDrawCards(4);
-                        showMessage('😰 Anda mengambil 4 kartu!');
-                        // Switch to player after Wild_Draw4 effect
-                        currentPlayer = 'player';
+                        showMessage('😰 Anda mengambil 4 kartu dan melewatkan giliran!');
+                        // Retain computer's turn
+                        currentPlayer = 'computer';
                     }
                     break;
 
